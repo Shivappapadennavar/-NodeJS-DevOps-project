@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Node DevOps App</title>
+</head>
+<body>
+  <h1>Frontend</h1>
+  <button onclick="getMsg()">Get Message</button>
+  <p id="msg"></p>
+
+  <script>
+    function getMsg() {
+      fetch("http://APP_SERVER_PUBLIC_IP:3000/api/message")
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById("msg").innerText = data.message;
+        });
+    }
+  </script>
+</body>
+</html>
+
