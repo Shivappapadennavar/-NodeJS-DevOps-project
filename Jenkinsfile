@@ -17,35 +17,60 @@ pipeline {
 
     stage("Build & Push Backend Image") {
       steps {
+<<<<<<< HEAD
         sh """
           docker build -t $DOCKERHUB_USER/node-backend ./Backend
           docker push $DOCKERHUB_USER/node-backend
         """
+=======
+        sh '''
+          docker build -t $DOCKERHUB_USER/node-backend ./Backend
+          docker push $DOCKERHUB_USER/node-backend
+        '''
+>>>>>>> 92382de981127e7e7ff41c0aab311083267f92f8
       }
     }
 
     stage("Build & Push Frontend Image") {
       steps {
+<<<<<<< HEAD
         sh """
           docker build -t $DOCKERHUB_USER/node-frontend ./Frontend
           docker push $DOCKERHUB_USER/node-frontend
         """
+=======
+        sh '''
+          docker build -t $DOCKERHUB_USER/node-frontend ./Frontend
+          docker push $DOCKERHUB_USER/node-frontend
+        '''
+>>>>>>> 92382de981127e7e7ff41c0aab311083267f92f8
       }
     }
 
     stage("Build & Push Nginx Image") {
       steps {
+<<<<<<< HEAD
         sh """
           docker build -t $DOCKERHUB_USER/node-nginx ./Nginx
           docker push $DOCKERHUB_USER/node-nginx
         """
+=======
+        sh '''
+          docker build -t $DOCKERHUB_USER/node-nginx ./nginx
+          docker push $DOCKERHUB_USER/node-nginx
+        '''
+>>>>>>> 92382de981127e7e7ff41c0aab311083267f92f8
       }
     }
 
     stage("Deploy on AWS EC2") {
       steps {
         sshagent(['app-ec2-ssh']) {
+<<<<<<< HEAD
           sh """
+=======
+          sh '''
+>>>>>>> 92382de981127e7e7ff41c0aab311083267f92f8
           ssh -o StrictHostKeyChecking=no $APP_SERVER << EOF
 
             docker network create $NETWORK || true
@@ -70,7 +95,11 @@ pipeline {
               $DOCKERHUB_USER/node-nginx
 
           EOF
+<<<<<<< HEAD
           """
+=======
+          '''
+>>>>>>> 92382de981127e7e7ff41c0aab311083267f92f8
         }
       }
     }
@@ -78,6 +107,7 @@ pipeline {
 
   post {
     success {
+<<<<<<< HEAD
       echo "✅ Deployment Successful!"
     }
     failure {
@@ -85,3 +115,14 @@ pipeline {
     }
   }
 }
+=======
+      echo "✅ Application deployed successfully!"
+    }
+    failure {
+      echo "❌ Deployment failed!"
+    }
+  }
+}
+
+
+>>>>>>> 92382de981127e7e7ff41c0aab311083267f92f8
