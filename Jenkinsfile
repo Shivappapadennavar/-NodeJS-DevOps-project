@@ -9,17 +9,17 @@ pipeline {
 
   stages {
 
-    stage("Clone Repository") {
+    stage("Checkout Code") {
       steps {
-        git 'https://github.com/Shivappapadennavar/-NodeJS-DevOps-project.git'
+        checkout scm
       }
     }
 
     stage("Build & Push Backend Image") {
       steps {
         sh '''
-          docker build -t shivu0777/node-backend ./Backend
-          docker push shivu0777/node-backend
+          docker build -t $DOCKERHUB_USER/node-backend ./Backend
+          docker push $DOCKERHUB_USER/node-backend
         '''
       }
     }
@@ -27,8 +27,8 @@ pipeline {
     stage("Build & Push Frontend Image") {
       steps {
         sh '''
-          docker build -t shivu0777/node-frontend ./Frontend
-          docker push shivu0777/node-frontend
+          docker build -t $DOCKERHUB_USER/node-frontend ./Frontend
+          docker push $DOCKERHUB_USER/node-frontend
         '''
       }
     }
@@ -36,38 +36,38 @@ pipeline {
     stage("Build & Push Nginx Image") {
       steps {
         sh '''
-          docker build -t shivu0777/node-nginx ./nginx
-          docker push shivu0777/node-nginx
+          docker build -t $DOCKERHUB_USER/node-nginx ./nginx
+          docker push $DOCKERHUB_USER/node-nginx
         '''
       }
     }
 
-    stage("Deploy on AWS EC2 App Server") {
+    stage("Deploy on AWS EC2") {
       steps {
         sshagent(['app-ec2-ssh']) {
           sh '''
-          ssh -o StrictHostKeyChecking=no ubuntu@44.205.4.22 << EOF
+          ssh -o StrictHostKeyChecking=no $APP_SERVER << EOF
 
-            docker network create node-network || true
+            docker network create $NETWORK || true
 
-            docker pull shivu0777/node-backend
-            docker pull shivu0777/node-frontend
-            docker pull shivu0777/node-nginx
+            docker pull $DOCKERHUB_USER/node-backend
+            docker pull $DOCKERHUB_USER/node-frontend
+            docker pull $DOCKERHUB_USER/node-nginx
 
             docker rm -f backend frontend nginx || true
 
             docker run -d --name backend \
-              --network node-network \
-              shivu0777/node-backend
+              --network $NETWORK \
+              $DOCKERHUB_USER/node-backend
 
             docker run -d --name frontend \
-              --network node-network \
-              shivu0777/node-frontend
+              --network $NETWORK \
+              $DOCKERHUB_USER/node-frontend
 
             docker run -d --name nginx \
-              --network node-network \
+              --network $NETWORK \
               -p 80:80 \
-              shivu0777/node-nginx
+              $DOCKERHUB_USER/node-nginx
 
           EOF
           '''
@@ -78,11 +78,12 @@ pipeline {
 
   post {
     success {
-      echo "✅ Deployment Successful! App is live on http://44.205.4.22"
+      echo "✅ Application deployed successfully!"
     }
     failure {
-      echo "❌ Deployment Failed! Check Jenkins logs."
+      echo "❌ Deployment failed!"
     }
   }
 }
+
 
